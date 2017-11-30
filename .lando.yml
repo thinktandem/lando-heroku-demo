@@ -1,0 +1,32 @@
+name: lando-heroku
+recipe: laravel
+config:
+  webroot: public
+  via: nginx
+
+  # Stuff we are adding on top of the laravel recipe.
+  database: mariadb:10.1
+
+  xdebug: true
+
+services:
+  appserver:
+    build:
+      - "cd $LANDO_MOUNT && composer install"
+    extras:
+      - "wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh"
+  node:
+    type: node:6.10
+    build:
+      - "cd $LANDO_MOUNT && npm install"
+
+tooling:
+  node:
+    service: node
+  npm:
+    service: node
+  gulp:
+    service: node
+  heroku:
+    service: appserver
+    cmd: /usr/bin/heroku
